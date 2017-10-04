@@ -3,6 +3,7 @@ import sys
 Student: Charles Laing ID: 1388069
 
 Greated an adjacency list to store a graph data struct
+http://www.geeksforgeeks.org/connected-components-in-an-undirected-graph/
 '''
 
 class head:
@@ -22,6 +23,17 @@ class Graph:
     def addEdge(self, source, dest):
         # helper function to add an edge
         self.nodeList[source].head.append(dest) #add the edge to the adjacency list
+
+    def connected(self):
+        visited =[]
+        [visited.append(False) for i in range(self.v)]
+        for i in range(self.v):
+            if (visited[i] == false):
+                DFSutl(i, visited)
+    def DFSutil(i, visited):
+        visited[i] = True
+        print(i)
+        
         
     def __str__(self):
         # build the output here for ease of calling later
@@ -60,3 +72,5 @@ if __name__ == "__main__":
 
         
         
+
+    
