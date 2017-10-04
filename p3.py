@@ -28,7 +28,7 @@ class Graph:
     def addEdge(self, source, dest):
         # helper function to add an edge
         self.nodeList[source].head.append(dest) #add the edge to the adjacency list
-        self.nodeList[dest].head.append(source)
+        #self.nodeList[dest].head.append(source)
 
     def connected(self):
         visited =[] #Create an open list to contain all unvisited nodes
@@ -42,7 +42,31 @@ class Graph:
         print(str(len(components))+'\n'+ '\n'.join(components)) #formatting the output
         
     def minDistance(self, start):
-        visisted = []
+        distance = 0
+        distv = []
+        visited = []
+        for i in range(self.v):
+            distv.append('-')
+            visited.append(False)
+            
+        for i in range(len(self.nodeList[start].head)):
+            if(visited[i] ==False):
+                self.recurseDist(start,visited, distv, 0)
+        distv[start] = 0;
+        print(str(self.v) +' '+ ' '.join(map(str, distv)))
+            
+    def recurseDist(self, start, visited, distv, dist=0):
+        distance = 0
+        visited[start] = True
+        for i in self.nodeList[start].head:
+            #print(self.nodeList[start].head)
+            if( not visited[i]):
+                dist+=1
+                self.recurseDist(i, visited,distv, dist)
+                distv[i] = dist
+        return distance +1
+                
+            
         
                 
     def DFSutl(self,i, visited):
@@ -64,12 +88,12 @@ def read():
             temp = line.pop(0)
             graph.addEdge(i,temp)
     
-    return graph, int(raw_input())
+    return graph, int(raw_input()) #Return the starting vertex
 
 def main():
     #Main function to call
     g, start = read()
-    
+    g.minDistance(start)
 
 if __name__ == "__main__":
     #If it is being called from the python interpreter, start main
