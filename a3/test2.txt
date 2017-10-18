@@ -1,0 +1,6 @@
+puzzle2 4 5 Y 1
+addb
+afgb
+cYYe
+cYYe
+h--i

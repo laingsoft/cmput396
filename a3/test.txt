@@ -1,0 +1,6 @@
+puzzle1 4 5 X 1
+aXXb
+aXXb
+cdde
+cfge
+h--i

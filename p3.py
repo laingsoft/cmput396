@@ -3,10 +3,8 @@ import sys
 Student: Charles Laing ID: 1388069
 
 creates an adjacency list to store a graph data struct
-outputs the connected components of the graph in the format 
+outputs the minimum distance to each vertx from a given v
 
-[num components]
-[num elements][element list]
 ..
 
 '''
@@ -42,10 +40,10 @@ class Graph:
         print(str(len(components))+'\n'+ '\n'.join(components)) #formatting the output
         
     def minDistance(self, start):
-        distance = 0
-        distv = []
-        visited = []
-        for i in range(self.v):
+        distance = 0 
+        distv = [] #vector of the nodelist, where each node is the distance
+        visited = [] #keep track of nodes
+        for i in range(self.v): #fill the two vectors
             distv.append('-')
             visited.append(False)
             
@@ -57,13 +55,13 @@ class Graph:
             
     def recurseDist(self, start, visited, distv, dist=0):
         distance = 0
-        visited[start] = True
+        visited[start] = True #to stop it from cycling
         for i in self.nodeList[start].head:
             #print(self.nodeList[start].head)
-            if( not visited[i]):
+            if( not visited[i]): #only do it if we haven't seen it before
                 dist+=1
-                self.recurseDist(i, visited,distv, dist)
-                distv[i] = dist
+                self.recurseDist(i, visited,distv, dist) #do the recursion magic
+                distv[i] = dist #update the distance to where we on the nodelist
         return distance +1
                 
             

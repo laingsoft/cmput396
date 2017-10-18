@@ -3,6 +3,8 @@ import sys
 Student: Charles Laing ID: 1388069
 
 Greated an adjacency list to store a graph data struct
+
+Python Version: Python 3
 '''
 
 class head:

@@ -3,6 +3,7 @@ import sys
 Student: Charles Laing ID: 1388069
 
 Greated an adjacency list to store a graph data struct
+outputs the connected structure of the graph. 
 
 '''
 
@@ -26,18 +27,19 @@ class Graph:
         self.nodeList[dest].head.append(source)
 
     def connected(self):
-        visited =[]
-        [visited.append(False) for i in range(self.v)]
-        components = []
+        visited =[] #created the visited list. we can keep track of the visited nodes here
+        [visited.append(False) for i in range(self.v)] #list comp to fill the visited with false
+        components = [] #for building the output at the end
         for i in range(self.v):
-            if (visited[i] == False):
+            if (visited[i] == False): #only look if we haven't seen it before
                 tempvar = self.DFSutl(i, visited)
                 if (len(tempvar)):                    
-                    components.append(str(len(tempvar)) +' '+  ' '.join([str(y) for y in tempvar]))
+                    components.append(str(len(tempvar)) +' '+  ' '.join([str(y) for y in tempvar])) # string building
         print(str(len(components))+'\n'+ '\n'.join(components))
         
     
     def DFSutl(self,i, visited):
+        #performs the dfs
         visited[i] = True
         val = []
         val.append(i)
