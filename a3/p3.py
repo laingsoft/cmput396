@@ -1,4 +1,35 @@
 from itertools import product
+from Queue import PriorityQueue
+
+def uniformCostSearch(puzzle):
+    openlist = PriorityQueue()
+    closed = {}
+    openlist.put((1, puzzle))
+
+    while not openlist.empty():
+        node = openlist.get()
+
+        if node.blocks in closed:
+            continue
+        
+        closed[node.blocks] = node
+
+        if puzzle.goaltest(node.blocks):
+            return solution(node)
+        
+        openlist = expandNode(openlist, closed, node)
+    return -1
+
+def expandNode(openlist, closed, node):
+    moves = node.writeGoals()
+    for i in moves: #Transform all of the possible moves and add them to the openlist
+        copy = node.blocks
+        copy.blocks[i[0]] = tuple(map(lambda a,b: a+b, i[1], copy.blocks[i[0]]))
+        if(copy not in closed):
+            openlist.put((i[2],copy))
+        
+        
+
 class Puzzle:
     def __init__(self):
         # create the data that we want to store.
@@ -6,6 +37,9 @@ class Puzzle:
         self.puzzleState = [] #List of a bunch of lists. So accessing the data will be puzzleState[i][j]
                               #where i is the row, and j is the column
         self.blocks = {}
+
+    def goaltest(self, blocks):
+        return True
         
     def read(self):
         #First line containes the Puzzle Name, Width, Height, ID of marked, Offset
@@ -50,15 +84,17 @@ class Puzzle:
         for i in range(self.dims[1]):
             for j in range(self.dims[0]):
                 self.blocks[self.puzzleState[i][j]].append((i,j))
-        empty = len(self.blocks.pop('-',None)) #Remove the empty spaces, and get the number of slots. this is the maximum number of moves possible
+        #print(self.blocks)
+        copy = self.blocks
+        empty = len(copy.pop('-',None)) #Remove the empty spaces, and get the number of slots. this is the maximum number of moves possible
         avail = [] # We need a flat list of all block positions to make comparisons easier
         openm = [] # we need an empty list of moves
         #flatten the coords of the blocks
-        for block in self.blocks:
-            if self.blocks[block] not in avail:
-                avail.extend(self.blocks[block])
+        for block in copy:
+            if copy[block] not in avail:
+                avail.extend(copy[block])
 
-        blockcopy = self.blocks #We make a copy in order to stops blocks being able to phase through eachother
+        blockcopy = copy #We make a copy in order to stops blocks being able to phase through eachother
         for val in range(1,empty+1):
             blockmoves = {'u':(-val, 0),'d':(val, 0), 'l':(0, -val), 'r':(0, val)}
            # print(self.blocks)
@@ -66,7 +102,7 @@ class Puzzle:
                 for move in blockmoves: # for u d l r
                     add = True
                     blocktest = []
-                    for i in self.blocks[block]: #apply udlr to all of the tuples in the block
+                    for i in copy[block]: #apply udlr to all of the tuples in the block
                         blocktest.append(tuple(map(lambda a,b: a+b, i, blockmoves[move])))
                         
                     #print(block, blocktest)
@@ -77,17 +113,17 @@ class Puzzle:
                     for i in blocktest:
                         #print(block, ((0 <= i[0] <= self.dims[0]) and (0<=i[1]<=self.dims[1])), i)
                         if ((i in avail) or not((0 <= i[0] < self.dims[1]) and (0 <= i[1] < self.dims[0]))):
-                            if( i not in self.blocks[block]): #Make sure it isn't colliding with itself
+                            if( i not in copy[block]): #Make sure it isn't colliding with itself
                                 add = False
                             #print("bad block, not adding")
                     if(add):
                         #print('adding', block, move)
-                        openm.append((block, move, val))
+                        openm.append((block, blockmoves[move], val))
 
             #We need to make sure that blocks can't jump over eachother
             blockcopy = {}
             for i in openm:
-                blockcopy[i[0]] = self.blocks[i[0]]
+                blockcopy[i[0]] = copy[i[0]]
                             
             
         '''
@@ -105,7 +141,7 @@ class Puzzle:
         for i in openm:
             output += ''.join(map(str, i)) + ' '
         print(output)
-            
+        return openm   
                 
 def main():
     puzzle = Puzzle()
