@@ -79,6 +79,8 @@ class Puzzle:
                         if ((i in avail) or not((0 <= i[0] < self.dims[1]) and (0 <= i[1] < self.dims[0]))):
                             if( i not in self.blocks[block]): #Make sure it isn't colliding with itself
                                 add = False
+                        if((i not in avail) and (block == self.marked) and (0<=i[0]<=self.dims[1]) and (0<= i[1] < self.dims[0])):
+                            add = True
                             #print("bad block, not adding")
                     if(add):
                         #print('adding', block, move)
