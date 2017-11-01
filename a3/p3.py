@@ -202,7 +202,6 @@ def main():
     val = uniformCostSearch(puzzle)
     move = [x for x in flatten(val)]
     new = []
-    print(len(move)/3)
     output = str(len(move)/3)+' '
     for x in range(len(move)/3): #split everything into 3
         y,x,v = move.pop(0), move.pop(0), move.pop(0)
