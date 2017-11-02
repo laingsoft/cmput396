@@ -1,27 +1,33 @@
+# Charles Laing, 1388069
+# Jonathan Armfield, Max Schafer
+# Implementation of A* for Path Finding.
+# Uses Python 3, heapq module is used for priority Queueing
+
+
 import heapq
 
 class NxNGrid:
-	def __init__(self):
-		self.grid = []	#[y][x] map of coords
-		self.obs = [] #List of Tuples representing each block.
-		self.dim = 0 #N
-		
-	def read(self):
-            # read in the map
-		self.dim = int(raw_input())
-		
-		for i in range(self.dim):
-			insertion = list(raw_input().strip())
-			for y in range(len(insertion)):
-				if (insertion[y] == "*"):
-					self.obs.append((y,i))
-			self.grid.append(insertion)
+        def __init__(self):
+                self.grid = []  #[y][x] map of coords
+                self.obs = [] #List of Tuples representing each block.
+                self.dim = 0 #N
                 
-	
-	def write(self):
-		for i in self.grid:
-			print(''.join(i))
-		
+        def read(self):
+                # read in the map
+                self.dim = int(input())
+                
+                for i in range(self.dim):
+                        insertion = list(input().strip())
+                        for y in range(len(insertion)):
+                                if (insertion[y] == "*"):
+                                        self.obs.append((y,i))
+                        self.grid.append(insertion)
+                
+        
+        def write(self):
+                for i in self.grid:
+                        print(''.join(i))
+                        
 
 class Node:
     def __init__(self, state, parent, goal, position):
@@ -30,6 +36,11 @@ class Node:
         self.goal = goal #Goal Position
         self.position = position #Where the node is
         self.prevmov = None
+
+    def __lt__(self, other):
+        if isinstance(other, self.__class__):
+            return self.position == other.position
+        return NotImplemented
 
     def Getmoves(self): #Computes the available moves for each node
         udlr = [(-1,0), (1,0), (0,-1), (0,1)]
@@ -92,41 +103,41 @@ def Astar(node, costfunc): #Add the path cost method here
 
 def readPoints():
     positions = [] #list of tuples of tuples. ie. [((s.x,s.y), (g.x,g.y))]
-    for i in range(int(raw_input())):
-        v = map(int, raw_input().split())
+    for i in range(int(input())):
+        v = list(map(int, input().split()))
         positions.append(((v[0], v[1]), (v[2], v[3])))
     return positions
         
         
     
-	
+        
 def main():
-	p = NxNGrid()
-	p.read()
+        p = NxNGrid()
+        p.read()
         positions = readPoints()
-	#p.write()
+        #p.write()
         #print(positions)
-       # print("Starting Astar")
+        # print("Starting Astar")
         #print(p.obs)
         for i in positions:
-            for v in ['0','M']:
-                initialNode = Node(p, None, i[1], i[0])
-                nn, maxopen, maxclosed = Astar(initialNode, v)
-                movelist = []
-                udlr = {(-1,0): 'L', (1,0):'R', (0,-1):'U', (0,1):'D', None:''}
-                while nn != None and  nn != -1:
-                    #print(nn.position, udlr[nn.prevmov])
-                    #movelist.append(udlr[nn.prevmov])
-                    movelist.insert(0,udlr[nn.prevmov])
-                    nn = nn.parent
-                if (nn == -1): path_size = -1
-                else: path_size = len(''.join(movelist))
-                print("h={0} {1} {2} {3} {4} {5} {6} {7} {8}".format(v,path_size,maxopen,maxclosed,initialNode.position[0], initialNode.position[1],
-                                                                         initialNode.goal[0], initialNode.goal[1],  ''.join(movelist)))
-                # print("Finished List")
-            
-
-	
-	
+                for v in ['0','M']:
+                        initialNode = Node(p, None, i[1], i[0])
+                        nn, maxopen, maxclosed = Astar(initialNode, v)
+                        movelist = []
+                        udlr = {(-1,0): 'L', (1,0):'R', (0,-1):'U', (0,1):'D', None:''}
+                        while nn != None and  nn != -1:
+                                #print(nn.position, udlr[nn.prevmov])
+                                #movelist.append(udlr[nn.prevmov])
+                                movelist.insert(0,udlr[nn.prevmov])
+                                nn = nn.parent
+                                if (nn == -1): path_size = -1
+                                else: path_size = len(''.join(movelist))
+                        print("h={0} {1} {2} {3} {4} {5} {6} {7} {8}".format(v,path_size,maxopen,maxclosed,initialNode.position[0], initialNode.position[1],
+                                                                                     initialNode.goal[0], initialNode.goal[1],  ''.join(movelist)))
+                                # print("Finished List")
+                                
+                                
+                                
+                                
 if __name__ == "__main__":
-	main()
+        main()
