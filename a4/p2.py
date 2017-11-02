@@ -130,8 +130,8 @@ def main():
                                 #movelist.append(udlr[nn.prevmov])
                                 movelist.insert(0,udlr[nn.prevmov])
                                 nn = nn.parent
-                                if (nn == -1): path_size = -1
-                                else: path_size = len(''.join(movelist))
+                        if (nn == -1): path_size = -1
+                        else: path_size = len(''.join(movelist))
                         print("h={0} {1} {2} {3} {4} {5} {6} {7} {8}".format(v,path_size,maxopen,maxclosed,initialNode.position[0], initialNode.position[1],
                                                                                      initialNode.goal[0], initialNode.goal[1],  ''.join(movelist)))
                                 # print("Finished List")
