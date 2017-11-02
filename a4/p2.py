@@ -45,12 +45,12 @@ class Node:
             
             
                         
-def nocost(start, goal):
-    return 0
+def nocost(start, goal, cost):
+    return cost
 
-def manhattan(start, goal):
+def manhattan(start, goal, cost):
     #do the manhattan distance
-    return abs(start[0] - goal[0]) + abs(start[1] - goal[1])
+    return cost + abs(start[0] - goal[0]) + abs(start[1] - goal[1])
 
 H_LIBRARY = {"M":manhattan, "0":nocost} # for ease of swapping functions
 
@@ -65,7 +65,8 @@ def Astar(node, costfunc): #Add the path cost method here
 
         #print("openlist" + str(openlist) + "closed" + str(closed))
         cost, testnode = heapq.heappop(openlist)
-        print(cost)
+        cost+=1
+        #print(cost)
 
         if testnode.position in closed:
             continue
@@ -84,7 +85,7 @@ def Astar(node, costfunc): #Add the path cost method here
             if newNode.position not in closed:
                 newNode.prevmov = k
                 #openlist.append((H_LIBRARY[costfunc](newNode.position, newNode.goal),newNode)) #RIP
-                heapq.heappush(openlist, (H_LIBRARY[costfunc](newNode.position, newNode.goal),newNode))
+                heapq.heappush(openlist, (H_LIBRARY[costfunc](newNode.position, newNode.goal, cost),newNode))
         
     return -1, maxOpen, maxClosed
 
@@ -103,7 +104,7 @@ def main():
 	p = NxNGrid()
 	p.read()
         positions = readPoints()
-	p.write()
+	#p.write()
         #print(positions)
        # print("Starting Astar")
         #print(p.obs)
@@ -118,8 +119,9 @@ def main():
                     #movelist.append(udlr[nn.prevmov])
                     movelist.insert(0,udlr[nn.prevmov])
                     nn = nn.parent
-                
-                print("h={0} {1} {2} {3} {4} {5} {6} {7} {8}".format(v,len(''.join(movelist)),maxopen,maxclosed,initialNode.position[0], initialNode.position[1],
+                if (nn == -1): path_size = -1
+                else: path_size = len(''.join(movelist))
+                print("h={0} {1} {2} {3} {4} {5} {6} {7} {8}".format(v,path_size,maxopen,maxclosed,initialNode.position[0], initialNode.position[1],
                                                                          initialNode.goal[0], initialNode.goal[1],  ''.join(movelist)))
                 # print("Finished List")
             
