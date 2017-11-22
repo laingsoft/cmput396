@@ -1,0 +1,7 @@
+P3 X
+--O---X
+--XXX-O
+--OOX-X
+--XXO-O
+--OOXOX
+--OXXXO

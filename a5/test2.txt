@@ -1,0 +1,7 @@
+P2 X
+--OOO-X
+--XXX-O
+--OOX-X
+--XXO-O
+--OOXOX
+--OXXXO
