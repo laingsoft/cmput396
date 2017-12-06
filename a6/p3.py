@@ -46,6 +46,7 @@ class webbels:
             self.board.append([])
             [self.board[i].append('') for y in range(self.dim)]
         self.fillRandom()
+        print(self.findMoves())
         self.score = 0
         
 
@@ -60,7 +61,35 @@ class webbels:
     def fillRandom(self):
         for x in range(self.dim):
             for y in range(self.dim):
-                self.board[x][y] = STRINGS[self.world_rng.randint(0,len(STRINGS)-1)]
+                self.board[x][y] = STRINGS[self.world_rng.randint(1,len(STRINGS)-1)]
+
+    def recursiveSearch(self,x,y,blocklist):
+        #Look up, down, left, right
+        if (x,y) in blocklist or x<0 or y<0:
+            return
+        blocklist.append((x,y))
+        #If the block is empty, ignore
+        this_block = self.board[x][y]
+        if this_block != '--' and 0 <= x < self.dim-1 and 0 <= y < self.dim-1:
+            if self.board[x+1][y] == this_block: self.recursiveSearch(x+1, y, blocklist)
+            #if self.board[x-1][y] == this_block: self.recursiveSearch(x-1, y, blocklist)
+            if self.board[x][y+1] == this_block: self.recursiveSearch(x, y+1, blocklist)
+            #if self.board[x][y-1] == this_block: self.recursiveSearch(x, y-1, blocklist)
+    
+        #if the block is the same, call recursive search on it,
+    def findMoves(self):
+        moveset = []
+        closedcoords = []
+        for x in range(self.dim):
+            for y in range(self.dim):
+                blocklist = []
+                self.recursiveSearch(y,x,blocklist)
+                closedcoords.append(blocklist)
+        print(self.board[1][2], self.board[2][2], self.board[3][2])
+        for i in closedcoords:
+            if len(i) > 2:
+                moveset.append(i)
+        return moveset
             
 
 def main(out, seed, n, size, colors, minballs, MC_runs):
