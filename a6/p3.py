@@ -33,7 +33,6 @@ class webbels:
     def __init__(self, k, seed):
         self.dim = k
         self.board = []
-        self.seed = seed
         self.move_rng = random.Random()
         self.world_rng = random.Random()
 
@@ -49,7 +48,7 @@ class webbels:
         blocklist = []
         self.recursiveSearch(0,1,blocklist)
         print(blocklist)
-        #self.doMove(blocklist)
+        self.doMove(blocklist)
         self.score = 0
         
 
@@ -66,19 +65,46 @@ class webbels:
             for y in range(self.dim):
                 self.board[x][y] = STRINGS[self.world_rng.randint(1,len(STRINGS)-1)]
 
+    def addLeft(self):
+        for y in range(self.dim):
+            self.board[y][0] = STRINGS[self.world_rng.randint(1,len(STRINGS)-1)]
+
     def doMove(self, blocklist):
         for coord in blocklist:
             self.board[coord[0]][coord[1]] = '--'
-
-        
+            
         gravity =  self.findGravity()
-
         while len(gravity):
             self.shiftDown(gravity)
             gravity = self.findGravity()
-        #print("gravity",gravity)
-        #self.shiftDown(gravity)
+            
+        pullr = self.pullRight()
+        while pullr:
+            print(pullr)
+            col = pullr.pop()
+            print(col)
+            if col == 0:
+                self.addLeft()
+            else:
+                self.shiftRight(col)
+                pullr = self.pullRight()
+                
+    def shiftRight(self, col):
+        for i in range(self.dim):
+            old = self.board[i][col-1]
+            self.board[i][col-1] = '--'
+            self.board[i][col] = old
+        
 
+    def pullRight(self):
+        retval = []
+        for x in range(self.dim):
+            col = []
+            for i in range(self.dim):
+                col.append(self.board[i][x])
+            if len(set(col)) == 1: retval.append(x)
+        return retval
+            
     def findGravity(self):
         retval = []
         for x in range(self.dim):
