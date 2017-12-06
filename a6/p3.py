@@ -30,8 +30,10 @@ def color(string, color):
 
 
 class webbels:
-    def __init__(self, k, seed):
-        self.dim = k
+    def __init__(self, size, seed,colors, minballs):
+        self.dim = size
+        self.colors = colors
+        self.minballs = minballs
         self.board = []
         self.move_rng = random.Random()
         self.world_rng = random.Random()
@@ -46,16 +48,24 @@ class webbels:
             [self.board[i].append('') for y in range(self.dim)]
         self.fillRandom()
         blocklist = []
+        self.play()
         #self.recursiveSearch(0,3,blocklist)
         #print(self.RandomMove(), "randomMove")
+
+    def play(self):
         carlo = self.RandomMove()
+        self.move = 0
         while carlo:
-            time.sleep(.5)
+            self.move += 1
+            #time.sleep(1)
+            #print(self)
+            #print(carlo)
+            self.doMove(carlo)
             print(self)
             print(carlo)
-            self.doMove(carlo)
             carlo = self.RandomMove()
-            #print(carlo)
+            print(carlo)
+            
             
             
         #self.doMove(blocklist)
@@ -93,11 +103,11 @@ class webbels:
     def fillRandom(self):
         for x in range(self.dim):
             for y in range(self.dim):
-                self.board[x][y] = STRINGS[self.world_rng.randint(1,len(STRINGS)-1)]
+                self.board[x][y] = STRINGS[self.world_rng.randint(1,self.colors)]
 
     def addLeft(self):
         for y in range(self.dim):
-            self.board[y][0] = STRINGS[self.world_rng.randint(1,len(STRINGS)-1)]
+            self.board[y][0] = STRINGS[self.world_rng.randint(1,self.colors)]
 
     def doMove(self, blocklist):
         for coord in blocklist:
@@ -113,9 +123,8 @@ class webbels:
             
         pullr = self.pullRight()
         while pullr:
-            print(pullr)
-            col = pullr.pop()
-            print(col)
+            col = pullr.pop(0)
+            #print(col)
             if col == 0:
                 self.addLeft()
             else:
@@ -123,6 +132,8 @@ class webbels:
                 pullr = self.pullRight()
                 
     def shiftRight(self, col):
+        #print(self)
+        #time.sleep(0.2)
         for i in range(self.dim):
             old = self.board[i][col-1]
             self.board[i][col-1] = '--'
@@ -157,37 +168,52 @@ class webbels:
 
     def recursiveSearch(self,x,y,blocklist):
         #Look up, down, left, right
-        if (x,y) in blocklist or x<0 or y<0:
+        if (y,x) in blocklist or x<0 or y<0:
             return
-        blocklist.append((x,y))
+
+        blocklist.append((y,x))
         #If the block is empty, ignore
-        this_block = self.board[x][y]
-        if this_block != '--' and 0 <= x < self.dim-1 and 0 <= y < self.dim-1:
-            if self.board[x+1][y] == this_block: self.recursiveSearch(x+1, y, blocklist)
-            if self.board[x-1][y] == this_block: self.recursiveSearch(x-1, y, blocklist)
-            if self.board[x][y+1] == this_block: self.recursiveSearch(x, y+1, blocklist)
-            if self.board[x][y-1] == this_block: self.recursiveSearch(x, y-1, blocklist)
+        this_block = self.board[y][x]
+        if this_block != '--':
+            if 0 <= x <self.dim-1:
+                if self.board[y][x+1] == this_block: self.recursiveSearch(x+1, y, blocklist)
+                if self.board[y][x-1] == this_block: self.recursiveSearch(x-1, y, blocklist)
+            if 0 <= y < self.dim-1:
+                if self.board[y+1][x] == this_block: self.recursiveSearch(x, y+1, blocklist)
+                if self.board[y-1][x] == this_block: self.recursiveSearch(x, y-1, blocklist)
+            
+
+            
+            
+            
+
+        
     
         #if the block is the same, call recursive search on it,
     def findMoves(self):
         moveset = []
         closedcoords = []
-        for x in range(self.dim):
-            for y in range(self.dim):
+        for y in range(self.dim):
+            for x in range(self.dim):
                 blocklist = []
-                self.recursiveSearch(y,x,blocklist)
+                
+                self.recursiveSearch(x,y,blocklist)
+                #print(blocklist)
                 closedcoords.append(blocklist)
        # print(self.board[1][2], self.board[2][2], self.board[3][2])
         for i in closedcoords:
-            if len(i) > 2:
+            if len(i) >= 2:
                 moveset.append(i)
         return moveset
             
 
 def main(out, seed, n, size, colors, minballs, MC_runs):
-    game = webbels(8, 50)
+    game = webbels(8, 100, 2, 1)
+    #for i in range(10):
+        #
+     #   game = webbels(8,i)
+        #print(game)
     print(game)
-    #print(game.score)
 
 
 
