@@ -1,6 +1,6 @@
 #CMPUT 396 Webbels
 import sys
-from random import randint
+import random
 
 STRINGS = ["--","oo","xx","$$","##","++","@@"]
 
@@ -30,14 +30,24 @@ def color(string, color):
 
 
 class webbels:
-    def __init__(self, k):
+    def __init__(self, k, seed):
         self.dim = k
         self.board = []
+        self.seed = seed
+        self.move_rng = random.Random()
+        self.world_rng = random.Random()
+
+        if seed != 0: #If the seed is 0, we don't want to set it
+            self.move_rng.seed(seed)
+            self.world_rng.seed(seed)
+
+            
         for i in range(self.dim):
             self.board.append([])
-            [self.board[i].append(STRINGS[1]) for y in range(self.dim)]
-        
+            [self.board[i].append('') for y in range(self.dim)]
+        self.fillRandom()
         self.score = 0
+        
 
     def __str__(self):
         output = ''
@@ -46,10 +56,15 @@ class webbels:
                 output+= color(self.board[i][y], STRINGS.index(self.board[i][y]) )
             output += '\n'
         return output
+
+    def fillRandom(self):
+        for x in range(self.dim):
+            for y in range(self.dim):
+                self.board[x][y] = STRINGS[self.world_rng.randint(0,len(STRINGS)-1)]
             
 
 def main(out, seed, n, size, colors, minballs, MC_runs):
-    game = webbels(3)
+    game = webbels(8, 50)
     print(game)
 
 
