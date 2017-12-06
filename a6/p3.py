@@ -1,6 +1,6 @@
 #CMPUT 396 Webbels
 import sys
-import random
+import random, math, time
 
 STRINGS = ["--","oo","xx","$$","##","++","@@"]
 
@@ -35,7 +35,7 @@ class webbels:
         self.board = []
         self.move_rng = random.Random()
         self.world_rng = random.Random()
-
+        self.score = 0
         if seed != 0: #If the seed is 0, we don't want to set it
             self.move_rng.seed(seed)
             self.world_rng.seed(seed)
@@ -46,18 +46,48 @@ class webbels:
             [self.board[i].append('') for y in range(self.dim)]
         self.fillRandom()
         blocklist = []
-        self.recursiveSearch(0,1,blocklist)
-        print(blocklist)
-        self.doMove(blocklist)
-        self.score = 0
+        #self.recursiveSearch(0,3,blocklist)
+        #print(self.RandomMove(), "randomMove")
+        carlo = self.RandomMove()
+        while carlo:
+            time.sleep(.5)
+            print(self)
+            print(carlo)
+            self.doMove(carlo)
+            carlo = self.RandomMove()
+            #print(carlo)
+            
+            
+        #self.doMove(blocklist)
+
+    def RandomMove(self):
+        if self.findMoves():
+            x,y = self.move_rng.randint(0, self.dim-1), self.move_rng.randint(0,self.dim-1)
+            blocklist = []
+            self.recursiveSearch(x,y,blocklist)
+            while len(blocklist) < 2:
+                x,y = self.move_rng.randint(0, self.dim-1), self.move_rng.randint(0,self.dim-1)
+                blocklist = []
+                self.recursiveSearch(x,y,blocklist)
+                #print(blocklist)
+            return blocklist
+        else:
+            return 0
+                
+                
+            
+        
         
 
     def __str__(self):
+        print("\x1b[2J")
+        print("\x1b[H")
         output = ''
         for i in range(self.dim):
             for y in range(self.dim):
                 output+= color(self.board[i][y], STRINGS.index(self.board[i][y]) )
             output += '\n'
+        output += str(self.score)
         return output
 
     def fillRandom(self):
@@ -72,6 +102,9 @@ class webbels:
     def doMove(self, blocklist):
         for coord in blocklist:
             self.board[coord[0]][coord[1]] = '--'
+
+        self.score = self.score + len(blocklist)**2
+            
             
         gravity =  self.findGravity()
         while len(gravity):
@@ -144,7 +177,7 @@ class webbels:
                 blocklist = []
                 self.recursiveSearch(y,x,blocklist)
                 closedcoords.append(blocklist)
-        print(self.board[1][2], self.board[2][2], self.board[3][2])
+       # print(self.board[1][2], self.board[2][2], self.board[3][2])
         for i in closedcoords:
             if len(i) > 2:
                 moveset.append(i)
@@ -154,6 +187,7 @@ class webbels:
 def main(out, seed, n, size, colors, minballs, MC_runs):
     game = webbels(8, 50)
     print(game)
+    #print(game.score)
 
 
 
