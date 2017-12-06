@@ -46,7 +46,10 @@ class webbels:
             self.board.append([])
             [self.board[i].append('') for y in range(self.dim)]
         self.fillRandom()
-        print(self.findMoves())
+        blocklist = []
+        self.recursiveSearch(0,1,blocklist)
+        print(blocklist)
+        #self.doMove(blocklist)
         self.score = 0
         
 
@@ -63,6 +66,36 @@ class webbels:
             for y in range(self.dim):
                 self.board[x][y] = STRINGS[self.world_rng.randint(1,len(STRINGS)-1)]
 
+    def doMove(self, blocklist):
+        for coord in blocklist:
+            self.board[coord[0]][coord[1]] = '--'
+
+        
+        gravity =  self.findGravity()
+
+        while len(gravity):
+            self.shiftDown(gravity)
+            gravity = self.findGravity()
+        #print("gravity",gravity)
+        #self.shiftDown(gravity)
+
+    def findGravity(self):
+        retval = []
+        for x in range(self.dim):
+            for y in range(self.dim):
+                if self.board[y][x] != '--' and y < self.dim-1:
+                    if self.board[y+1][x] == '--':
+                        retval.append((x,y))
+        return(retval)
+
+    def shiftDown(self, shiftblocks):
+        for coord in shiftblocks:
+            old = self.board[coord[1]][coord[0]]
+            self.board[coord[1]][coord[0]] = '--'
+            self.board[coord[1]+1][coord[0]] = old
+            
+            
+
     def recursiveSearch(self,x,y,blocklist):
         #Look up, down, left, right
         if (x,y) in blocklist or x<0 or y<0:
@@ -72,9 +105,9 @@ class webbels:
         this_block = self.board[x][y]
         if this_block != '--' and 0 <= x < self.dim-1 and 0 <= y < self.dim-1:
             if self.board[x+1][y] == this_block: self.recursiveSearch(x+1, y, blocklist)
-            #if self.board[x-1][y] == this_block: self.recursiveSearch(x-1, y, blocklist)
+            if self.board[x-1][y] == this_block: self.recursiveSearch(x-1, y, blocklist)
             if self.board[x][y+1] == this_block: self.recursiveSearch(x, y+1, blocklist)
-            #if self.board[x][y-1] == this_block: self.recursiveSearch(x, y-1, blocklist)
+            if self.board[x][y-1] == this_block: self.recursiveSearch(x, y-1, blocklist)
     
         #if the block is the same, call recursive search on it,
     def findMoves(self):
