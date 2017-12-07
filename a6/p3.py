@@ -31,6 +31,7 @@ def color(string, color, mode):
     else:
         return string
 class MonteTree:
+    #Represents the MonteCarlo tree. Copies the object and makes child nodes
     def __init__(self, webbels):
         self.node = copy.deepcopy(webbels)
 
@@ -190,8 +191,14 @@ class webbels:
                 self.board[x][y] = STRINGS[self.world_rng.randint(1,self.colors)]
 
     def addLeft(self):
+        numballs =  self.world_rng.randint(self.minballs, self.dim)
+        padding = self.dim - numballs
+        newcol = []
+        [newcol.append(STRINGS[0]) for i in range(padding)]
+        [newcol.append(STRINGS[self.world_rng.randint(1,self.colors)]) for i in range(numballs)]
+        
         for y in range(self.dim):
-            self.board[y][0] = STRINGS[self.world_rng.randint(1,self.colors)]
+            self.board[y][0] = newcol[y]
 
     def doMove(self, blocklist):
         for coord in blocklist:
@@ -341,3 +348,6 @@ if __name__ == '__main__':
         argv = []
         [argv.append(int(i)) for i in args[1:]]
         main(argv[0],argv[1],argv[2],argv[3],argv[4],argv[5],argv[6])
+
+
+ 
