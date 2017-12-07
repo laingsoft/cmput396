@@ -1,6 +1,6 @@
 #CMPUT 396 Webbels
 import sys
-import random, math, time
+import random, math, time, copy
 
 STRINGS = ["--","oo","xx","$$","##","++","@@"]
 
@@ -30,10 +30,48 @@ def color(string, color, mode):
         return(str(COLORS[color] + string + COLOR_TERM))
     else:
         return string
+class MonteTree:
+    def __init__(self, webbels):
+        self.node = copy.deepcopy(webbels)
+
+    def findChildScores(self, monteVal):
+        moveset = {}
+        movesAtNode = self.node.findMoves()
+        #[print(i) for i in movesAtNode]
+        for move in movesAtNode:
+            #print("trying",move)
+            depth = monteVal
+            child = copy.deepcopy(self.node)
+            carlo = move #child.RandomMove()
+            child.move = 0
+            child.mscore = 0
+            child.avg = 0
+            while carlo and depth:
+                depth -= 1
+                child.move += 1
+                child.mscore = len(carlo) ** 2
+                child.avg += child.mscore
+                child.doMove(carlo)
+                
+               
+                #print(carlo)
+                carlo = child.RandomMove()
+                #print(carlo)
+            child.avg = child.avg / child.move
+            #print("score", child.score)
+            moveset[child.score] = move
+        #print ("best move",moveset[max(moveset)])
+        return moveset[max(moveset)]
+            
+            
+        
 
 class webbels:
-    def __init__(self,colormode, size, seed,colors, minballs, printmode,timer):
+    def __init__(self,colormode, size, seed,colors, minballs, printmode,timer, MC_Depth):
         self.dim = size
+        self.MC_Depth = MC_Depth
+        self.move = 0
+        self.avg = 0
         self.mscore = 0
         self.printmode = printmode
         self.colormode = colormode
@@ -59,32 +97,55 @@ class webbels:
         #print(self.RandomMove(), "randomMove")
 
     def play(self):
-        self.fillRandom()
-        carlo = self.RandomMove()
-        self.move = 0
-        self.mscore = 0
-        self.avg = 0
-        while carlo:
-            self.move += 1
-            time.sleep(self.timer / 1000)
-            #print(self)
-            #print(carlo)
-            self.mscore = len(carlo) ** 2
-           
-
-            self.avg += self.mscore
-            self.doMove(carlo)
-            
-            if self.printmode:
-                print(self)
-            #print(carlo)
+        #self.fillRandom()
+        if self.MC_Depth == 0:
             carlo = self.RandomMove()
-            #print(carlo)
-        self.avg = self.avg / self.move
+            self.move = 0
+            self.mscore = 0
+            self.avg = 0
+            while carlo:
+            
+                self.move += 1
+                time.sleep(self.timer / 1000)
+                #print(self)
+                #print(carlo)
+                self.mscore = len(carlo) ** 2
+                
+                
+                self.avg += self.mscore
+                self.doMove(carlo)
+                
+                if self.printmode:
+                    print(self)
+                    #print(carlo)
+                carlo = self.RandomMove()
+                #print(carlo)
+                self.avg = self.avg / self.move
+        else:
+            #if the depth is >0, do the monte carlo search
+            self.move = 0
+            self.mscore = 0
+            self.avg = 0
+            while self.findMoves():
+                tree = MonteTree(self)
+                time.sleep(self.timer / 1000)
+                self.move += 1
+                best = tree.findChildScores(self.MC_Depth)
+                self.mscore = len(best) **2
+                self.avg += self.mscore
+                self.doMove(best)
+
+                if self.printmode:
+                    print(self)
+            self.avg = self.avg / self.move
+            
+            
             
             
             
         #self.doMove(blocklist)
+
+        
 
     def RandomMove(self):
         if self.findMoves():
@@ -123,6 +184,7 @@ class webbels:
         return output
 
     def fillRandom(self):
+        self.score = 0
         for x in range(self.dim):
             for y in range(self.dim):
                 self.board[x][y] = STRINGS[self.world_rng.randint(1,self.colors)]
@@ -235,6 +297,7 @@ def main(out, seed, n, size, colors, minballs, MC_runs):
         scores = []
         game = webbels(0,size, seed, colors, minballs,0,0)
         for i in range(n):
+            game.fillRandom()
             game.play()
             scores.append(game.score)
             print("game {0} moves {1}".format(i, game.move))
@@ -244,6 +307,7 @@ def main(out, seed, n, size, colors, minballs, MC_runs):
         scores = []
         game = webbels(0,size, seed, colors, minballs,1,0)
         for i in range(n):
+            game.fillRandom()
             game.play()
             scores.append(game.score)
             print("game {0} moves {1}".format(i, game.move))
@@ -251,10 +315,14 @@ def main(out, seed, n, size, colors, minballs, MC_runs):
         #print(game)
     elif out > 0:
         scores = []
-        game = webbels(1, size, seed, colors, minballs, 1, out)
+        game = webbels(1, size, seed, colors, minballs, 1, out, MC_runs)
         for i in range(n):
+            game.fillRandom()
             game.play()
-            scores.append(game.score)
+            #tree = MonteTree(game)
+            #tree.findChildScores(2)
+            
+            #scores.append(game.score)
             print("game {0} moves {1} avg {2}".format(i, game.move, game.avg))
         print(scores)
     #for i in range(10):
