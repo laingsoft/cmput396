@@ -120,7 +120,7 @@ class webbels:
                     #print(carlo)
                 carlo = self.RandomMove()
                 #print(carlo)
-                self.avg = self.avg / self.move
+            self.avg = self.avg / self.move
         else:
             #if the depth is >0, do the monte carlo search
             self.move = 0
