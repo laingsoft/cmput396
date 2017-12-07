@@ -25,13 +25,19 @@ COLORS = {
             }
 COLOR_TERM = '\x1b[0m'
 
-def color(string, color):
-    return(str(COLORS[color] + string + COLOR_TERM))
-
+def color(string, color, mode):
+    if mode:
+        return(str(COLORS[color] + string + COLOR_TERM))
+    else:
+        return string
 
 class webbels:
-    def __init__(self, size, seed,colors, minballs):
+    def __init__(self,colormode, size, seed,colors, minballs, printmode,timer):
         self.dim = size
+        self.mscore = 0
+        self.printmode = printmode
+        self.colormode = colormode
+        self.timer = timer
         self.colors = colors
         self.minballs = minballs
         self.board = []
@@ -41,30 +47,40 @@ class webbels:
         if seed != 0: #If the seed is 0, we don't want to set it
             self.move_rng.seed(seed)
             self.world_rng.seed(seed)
-
             
         for i in range(self.dim):
             self.board.append([])
             [self.board[i].append('') for y in range(self.dim)]
-        self.fillRandom()
+            
+        
         blocklist = []
-        self.play()
+        #self.play()
         #self.recursiveSearch(0,3,blocklist)
         #print(self.RandomMove(), "randomMove")
 
     def play(self):
+        self.fillRandom()
         carlo = self.RandomMove()
         self.move = 0
+        self.mscore = 0
+        self.avg = 0
         while carlo:
             self.move += 1
-            #time.sleep(1)
+            time.sleep(self.timer / 1000)
             #print(self)
             #print(carlo)
+            self.mscore = len(carlo) ** 2
+           
+
+            self.avg += self.mscore
             self.doMove(carlo)
-            print(self)
-            print(carlo)
+            
+            if self.printmode:
+                print(self)
+            #print(carlo)
             carlo = self.RandomMove()
-            print(carlo)
+            #print(carlo)
+        self.avg = self.avg / self.move
             
             
             
@@ -94,10 +110,16 @@ class webbels:
         print("\x1b[H")
         output = ''
         for i in range(self.dim):
+            output+= str(i)+" |"
             for y in range(self.dim):
-                output+= color(self.board[i][y], STRINGS.index(self.board[i][y]) )
-            output += '\n'
-        output += str(self.score)
+                output+= color(self.board[i][y], STRINGS.index(self.board[i][y]), self.colormode)
+            output += '| \n'
+        bottom = '  '
+        for i in range(self.dim):
+            bottom += " "+str(i)
+        bottom += '\n'
+        output += bottom
+        output += "moves: {0} score: {1} move-score: {2}\n ".format(self.move, self.score, self.mscore)
         return output
 
     def fillRandom(self):
@@ -208,12 +230,38 @@ class webbels:
             
 
 def main(out, seed, n, size, colors, minballs, MC_runs):
-    game = webbels(8, 100, 2, 1)
+    #(self,colormode, size, seed,colors, minballs, printmode,timer)
+    if out == 0 :
+        scores = []
+        game = webbels(0,size, seed, colors, minballs,0,0)
+        for i in range(n):
+            game.play()
+            scores.append(game.score)
+            print("game {0} moves {1}".format(i, game.move))
+        print(scores)
+        #print(game)
+    if out == -1:
+        scores = []
+        game = webbels(0,size, seed, colors, minballs,1,0)
+        for i in range(n):
+            game.play()
+            scores.append(game.score)
+            print("game {0} moves {1}".format(i, game.move))
+        print(scores)
+        #print(game)
+    elif out > 0:
+        scores = []
+        game = webbels(1, size, seed, colors, minballs, 1, out)
+        for i in range(n):
+            game.play()
+            scores.append(game.score)
+            print("game {0} moves {1} avg {2}".format(i, game.move, game.avg))
+        print(scores)
     #for i in range(10):
         #
      #   game = webbels(8,i)
         #print(game)
-    print(game)
+    #print(game)
 
 
 
