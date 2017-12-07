@@ -2,7 +2,7 @@
 import sys
 import random, math, time, copy
 
-STRINGS = ["--","oo","xx","$$","##","++","@@"]
+STRINGS = ["--","oo","xx","$$","##","++","@@","ww","aa","mm","66"]
 
 #Colors:
 #0 - Black
@@ -21,7 +21,10 @@ COLORS = {
     4:"\x1b[1;37;44m",
     5:"\x1b[1;37;45m",
     6:"\x1b[1;37;46m",
-    7:"\x1b[1;37;47m"
+    7:"\x1b[1;37;47m",
+    8:"\x1b[1;37;48m",
+    9:"\x1b[1;37;49m",
+    10:"\x1b[1;37;50m"
             }
 COLOR_TERM = '\x1b[0m'
 
@@ -302,17 +305,19 @@ def main(out, seed, n, size, colors, minballs, MC_runs):
     #(self,colormode, size, seed,colors, minballs, printmode,timer)
     if out == 0 :
         scores = []
-        game = webbels(0,size, seed, colors, minballs,0,0)
+        amoves = 0
+        game = webbels(0,size, seed, colors, minballs, 0, 0, MC_runs)
         for i in range(n):
             game.fillRandom()
             game.play()
             scores.append(game.score)
-            print("game {0} moves {1}".format(i, game.move))
+            amoves += game.move
+            print("game {0} moves {1} running-average {2}".format(i, game.move, amoves/n))
         print(scores)
         #print(game)
     if out == -1:
         scores = []
-        game = webbels(0,size, seed, colors, minballs,1,0)
+        game = webbels(0,size, seed, colors, minballs,1,0, MC_runs)
         for i in range(n):
             game.fillRandom()
             game.play()
@@ -350,4 +355,25 @@ if __name__ == '__main__':
         main(argv[0],argv[1],argv[2],argv[3],argv[4],argv[5],argv[6])
 
 
- 
+ # Part C
+# The Point of this experiment is to determine suitable values of colors and
+# minballs for values 6, 7, 8, 9, and 10
+# Assuming that the algorithm is an expert player at MC_runs = 150
+# and humans like games with ~ 70 to 90 moves
+
+
+# To determine how the two factors relate, We will assume that board is constant
+# at k = 10
+
+# Initially, 50 games are analyzed with the same seed being set for each.
+#(My computer is a very budget model, at 200 the time requirements are too high)
+# The first value changed is minballs, the following was observed
+# average moves (Minballs = 6) : 47.34
+# average moves (Minballs = 9) : 51.74
+
+# Next, color number is manipulated
+# average moves (Color = 6) : 48.48
+# average moves (Color = 9) : 26.72
+
+# based on this analysis, the best result would be 6 for minballs,
+# and 9 for color. As the color number increases, as does the average moves.
