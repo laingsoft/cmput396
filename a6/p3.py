@@ -312,7 +312,7 @@ def main(out, seed, n, size, colors, minballs, MC_runs):
             game.play()
             scores.append(game.score)
             amoves += game.move
-            print("game {0} moves {1} running-average {2}".format(i, game.move, amoves/n))
+            print("game {0} moves {1} avg {2}".format(i, game.move, game.avg))
         print(scores)
         #print(game)
     if out == -1:
@@ -322,7 +322,7 @@ def main(out, seed, n, size, colors, minballs, MC_runs):
             game.fillRandom()
             game.play()
             scores.append(game.score)
-            print("game {0} moves {1}".format(i, game.move))
+            print("game {0} moves {1} avg {2}".format(i, game.move, game.avg))
         print(scores)
         #print(game)
     elif out > 0:
